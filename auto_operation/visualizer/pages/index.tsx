@@ -1,12 +1,15 @@
+import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import Platform from "../components/Platform";
+import Section from "../components/Section";
+import { BlocksContext } from "../contexts";
 import { validateSignalTaikenMessage } from "../lib/signal";
 import styles from "../styles/Home.module.css";
 import { Blocks } from "../types";
 
-export default function Home() {
+const Home: NextPage = () => {
   const [blocks, setBlocks] = useState<Blocks>({
     s0: false,
     s1: false,
@@ -82,6 +85,9 @@ export default function Home() {
 
   return (
     <div>
+      <Head>
+        <title>自動運転ビジュアライザ</title>
+      </Head>
       <BlocksContext.Provider value={blocks}>
         <svg width="100%" viewBox="0 0 480 200">
           <rect width={480} height={200} fill="#222222" />
@@ -207,63 +213,6 @@ export default function Home() {
       </BlocksContext.Provider>
     </div>
   );
-}
-
-const BlocksContext = createContext<Blocks>({});
-
-interface SectionProps {
-  id: string;
-  points: { x: number; y: number }[];
-}
-
-const Section: React.FC<SectionProps> = ({ id, points }) => {
-  const blocks = useContext(BlocksContext);
-
-  const blocked = Boolean(blocks[id]);
-
-  const shrinkedPointFirst = {
-    x: points[0].x + Math.sign(points[1].x - points[0].x) * 2,
-    y: points[0].y + Math.sign(points[1].y - points[0].y) * 2,
-  };
-
-  const n = points.length;
-
-  const shrinkedPointLast = {
-    x: points[n - 1].x + Math.sign(points[n - 2].x - points[n - 1].x) * 2,
-    y: points[n - 1].y + Math.sign(points[n - 2].y - points[n - 1].y) * 2,
-  };
-
-  const shrinkedPoints = [
-    shrinkedPointFirst,
-    ...points.slice(1, -1),
-    shrinkedPointLast,
-  ];
-
-  return (
-    <polyline
-      points={shrinkedPoints.map((p) => `${p.x},${p.y}`).join(" ")}
-      fill="none"
-      stroke={blocked ? "red" : "white"}
-      strokeWidth={blocked ? 2 : 1}
-      strokeLinecap="square"
-    />
-  );
 };
 
-interface PlatformProps {
-  position: { x: number; y: number };
-}
-
-const Platform: React.FC<PlatformProps> = ({ position }) => {
-  const width = 30;
-  const height = 10;
-  return (
-    <rect
-      x={position.x - width / 2}
-      y={position.y - height / 2}
-      width={width}
-      height={height}
-      fill="white"
-    />
-  );
-};
+export default Home;
