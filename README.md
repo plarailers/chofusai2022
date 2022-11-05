@@ -1,20 +1,12 @@
-# Maker Faire Tokyo 2022
+# 調布祭 2022
 
-開催日：2022年9月3日（土）～4日（日）
+開催日：2022年11月18日（金）～20日（日）
 
-## 内容
-
-【運転体験】
-- raspi 車載カメラから映像を配信する部分
-- online 運転体験を操作するGUI
-
-【自動運転】
-- train_esp32_simple ESP32に書き込んでいるコード
-- sketch_200411a PC側の自動運転制御システム
-- pc_changeable 自動運転システムのない、ただESPに速度指令を送るPC側コード
+## 概要
+電通大工学研究部のプラレール企画に、自動運転システムを提供する。詳細は https://scrapbox.io/plarailers-private/ueckoken%2Fplarail2022 を参照
 
 ## インストール
 
 ```sh
-git clone https://github.com/plarailers/mft2022.git
+git clone https://github.com/plarailers/chofusai2022.git
 ```

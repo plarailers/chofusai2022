@@ -8,13 +8,16 @@ ESP_EYE_IP_ADDR = "esp32-1D31E4.mshome.net"
 
 # 自動運転システムの初期化
 operation = Operation()
-operation.state.communication.setup(simulationMode=False)
+operation.state.communication.setup(simulationMode=True)
 operation.ato.setEnabled(1, True)
 
 # Flaskウェブサーバの初期化
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(
+    app,
+    async_mode='gevent'  # WindowsでCtrl-Cが効かない問題への対処
+)
 
 # 自動運転システムが0.1secおきに実行する作業
 def operation_loop():
@@ -31,11 +34,15 @@ def send_signal_to_browser():
         train_taiken = operation.state.getTrainById(1)  # ラズパイ体験車(id=1)を取得
         signal = operation.signalSystem.getSignal(train_taiken.currentSection.id, train_taiken.currentSection.targetJunction.getOutSection().id)  # 体験車から見た信号機を取得
         distance = operation.ato.getDistanceUntilStop(train_taiken)  # 停止位置までの距離を取得
+        blocks = {}  # 閉塞を送る。区間0と3に列車がいるなら、{'s0': True, 's3': True} のような文字列
+        for train in operation.state.trainList:
+            blocks["s" + str(train.currentSection.id)] = True
 
         # websocketで送信
         socketio.emit('signal_taiken', {
             'signal': signal.value,
-            'distance': int(distance)
+            'distance': int(distance),
+            'blocks': blocks
         })
 
 # ブラウザからwebsocketで速度指令を受け取って、体験車の速度を変更する関数
