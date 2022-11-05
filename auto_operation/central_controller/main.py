@@ -8,20 +8,23 @@ ESP_EYE_IP_ADDR = "esp32-1D31E4.mshome.net"
 
 # 自動運転システムの初期化
 operation = Operation()
-operation.state.communication.setup(simulationMode=False)
+operation.state.communication.setup(simulationMode=True)
 operation.ato.setEnabled(1, True)
 
 # Flaskウェブサーバの初期化
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(
+    app,
+    async_mode='gevent'  # WindowsでCtrl-Cが効かない問題への対処
+)
 
 # 自動運転システムが0.1secおきに実行する作業
 def operation_loop():
     while True:
         operation.update()
         train_taiken = operation.state.getTrainById(1)  # ラズパイ体験車(id=1)を取得
-        print(f"[main.operation_loop] t0.section: {operation.state.getTrainById(0).currentSection.id}, t0.mil: {operation.state.getTrainById(0).mileage:.2f}, t0.spd: {operation.state.getTrainById(0).targetSpeed:.2f}, t1.section: {operation.state.getTrainById(1).currentSection.id}, t1.mil: {operation.state.getTrainById(1).mileage:.2f}, t1.spd: {operation.state.getTrainById(1).targetSpeed:.2f}")
+        # print(f"[main.operation_loop] t0.section: {operation.state.getTrainById(0).currentSection.id}, t0.mil: {operation.state.getTrainById(0).mileage:.2f}, t0.spd: {operation.state.getTrainById(0).targetSpeed:.2f}, t1.section: {operation.state.getTrainById(1).currentSection.id}, t1.mil: {operation.state.getTrainById(1).mileage:.2f}, t1.spd: {operation.state.getTrainById(1).targetSpeed:.2f}")
         time.sleep(0.1)
 
 # ブラウザにwebsocketで0.1secおきに信号を送る関数

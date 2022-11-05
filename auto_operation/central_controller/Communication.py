@@ -36,7 +36,7 @@ class Communication:
                 self.simulationSpeedMap[1] = 0.0
                 self.deltaMap[0] = 0.0
                 self.deltaMap[1] = 0.0
-                self.arduino = serial.Serial("COM11", 9600)
+                self.arduino = serial.Serial("COM13", 9600)
             else:
                 self.simulationSpeedMap[0] = 0.0
                 self.simulationSpeedMap[1] = 0.0
@@ -51,7 +51,7 @@ class Communication:
                 # self.simulationSpeedMap[1] = 0.0  #[1]だけ実機がないのでsimulaitonを更新
                 self.deltaMap[0] = 0.0
                 self.deltaMap[1] = 0.0
-                self.arduino = serial.Serial("COM11", 9600)
+                self.arduino = serial.Serial("COM13", 9600)
             else:
                 self.esp32Map[0] = serial.Serial("/dev/cu.ESP32-Dr", 115200)
                 self.esp32Map[0] = serial.Serial("/dev/cu.ESP32-E6", 115200)
