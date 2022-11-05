@@ -93,11 +93,6 @@ class State:
         self.communication.sendToggle(self.getJunctionById(2).servoId, Junction.ServoState.Straight)
         self.communication.sendToggle(self.getJunctionById(6).servoId, Junction.ServoState.Straight)
 
-        j6 = self.getJunctionById(6)
-        print(f"[State::init] j6 inSectionStraight: {j6.inSectionStraight}, inSectionCurve: {j6.inSectionCurve}, outSectionStraight: {j6.outSectionStraight}, outSectionCurve: {j6.outSectionCurve}")
-        j10 = self.getJunctionById(10)
-        print(f"[State::init] j10 inSectionStraight: {j10.inSectionStraight}, inSectionCurve: {j10.inSectionCurve}, outSectionStraight: {j10.outSectionStraight}, outSectionCurve: {j10.outSectionCurve}")
-
     # 現実世界の状態を取得しStateに反映する. 定期的に実行すること
     def update(self):
         # 情報取得

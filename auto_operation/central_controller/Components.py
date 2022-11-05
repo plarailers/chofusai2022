@@ -11,8 +11,6 @@ class Section:
         self.sourceJunction.addOutSection(self, sourceServoState)
         self.targetJunction = targetJunction
         self.targetJunction.addInSection(self, targetServoState)
-        # print(f"[Section::init] id: {id}, srcJ.inSectionStraight: {sourceJunction.inSectionStraight}, srcJ.inSectionCurve: {sourceJunction.inSectionCurve}, srcJ.outSectionStraight: {sourceJunction.outSectionStraight}, srcJ.outSectionCurve: {sourceJunction.outSectionStraight}")
-        # print(f"[Section::init] id: {id}, tgtJ.inSectionStraight: {targetJunction.inSectionStraight}, tgtJ.inSectionCurve: {targetJunction.inSectionCurve}, tgtJ.outSectionStraight: {targetJunction.outSectionStraight}, tgtJ.outSectionCurve: {targetJunction.outSectionStraight}")
 
     def putStation(self, station: 'Station', stationPosition: float):
         self.station = station
