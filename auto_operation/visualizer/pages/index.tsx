@@ -243,7 +243,7 @@ const Section: React.FC<SectionProps> = ({ id, points }) => {
     <polyline
       points={shrinkedPoints.map((p) => `${p.x},${p.y}`).join(" ")}
       fill="none"
-      stroke={blocked ? "lime" : "white"}
+      stroke={blocked ? "red" : "white"}
       strokeWidth={blocked ? 2 : 1}
       strokeLinecap="square"
     />
