@@ -2,6 +2,7 @@ import atexit
 from Operation import *
 from flask import Flask, render_template, Response
 from flask_socketio import SocketIO
+from flask_cors import CORS
 import threading
 
 ESP_EYE_IP_ADDR = "esp32-1D31E4.mshome.net"
@@ -16,8 +17,10 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(
     app,
+    cors_allowed_origins="*",  # ビジュアライザからのアクセスを許可する
     async_mode='gevent'  # WindowsでCtrl-Cが効かない問題への対処
 )
+CORS(app)  # ビジュアライザからのアクセスを許可する
 
 # 自動運転システムが0.1secおきに実行する作業
 def operation_loop():
