@@ -1,7 +1,10 @@
 import Head from "next/head";
 import Image from "next/image";
 import { createContext, useContext, useEffect, useState } from "react";
+import { io } from "socket.io-client";
+import { validateSignalTaikenMessage } from "../lib/signal";
 import styles from "../styles/Home.module.css";
+import { Blocks } from "../types";
 
 export default function Home() {
   const [blocks, setBlocks] = useState<Blocks>({
@@ -21,41 +24,60 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const sequence: string[][] = [
-      ["s0"],
-      ["s1"],
-      ["s2"],
-      ["s3"],
-      ["s4"],
-      ["s5"],
-      ["s6"],
-      ["s11"],
-      ["s12"],
-      ["s0"],
-      ["s1"],
-      ["s2"],
-      ["s7"],
-      ["s8"],
-      ["s9"],
-      ["s10"],
-      ["s11"],
-      ["s12"],
-    ];
+    if (process.env.NEXT_PUBLIC_NO_WEBSOCKET) {
+      const sequence: string[][] = [
+        ["s0"],
+        ["s1"],
+        ["s2"],
+        ["s3"],
+        ["s4"],
+        ["s5"],
+        ["s6"],
+        ["s11"],
+        ["s12"],
+        ["s0"],
+        ["s1"],
+        ["s2"],
+        ["s7"],
+        ["s8"],
+        ["s9"],
+        ["s10"],
+        ["s11"],
+        ["s12"],
+      ];
 
-    let index = sequence.length - 1;
+      let index = sequence.length - 1;
 
-    const interval = setInterval(() => {
-      index = (index + 1) % sequence.length;
-      const blocks: Blocks = {};
-      for (const section of sequence[index]) {
-        blocks[section] = true;
-      }
-      setBlocks(blocks);
-    }, 1000);
+      const interval = setInterval(() => {
+        index = (index + 1) % sequence.length;
+        const blocks: Blocks = {};
+        for (const section of sequence[index]) {
+          blocks[section] = true;
+        }
+        setBlocks(blocks);
+      }, 1000);
 
-    return () => {
-      clearInterval(interval);
-    };
+      return () => {
+        clearInterval(interval);
+      };
+    } else {
+      // before_first_request を起動
+      fetch("http://localhost:50050");
+
+      const socket = io("http://localhost:50050");
+      socket.on("signal_taiken", (data: unknown) => {
+        console.log(data);
+        if (validateSignalTaikenMessage(data)) {
+          setBlocks(data.blocks);
+        } else {
+          throw new Error(`Illegal message: ${JSON.stringify(data)}`);
+        }
+      });
+
+      return () => {
+        socket.close();
+      };
+    }
   }, []);
 
   return (
@@ -186,8 +208,6 @@ export default function Home() {
     </div>
   );
 }
-
-type Blocks = Record<string, boolean>;
 
 const BlocksContext = createContext<Blocks>({});
 
